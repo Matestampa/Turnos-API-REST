@@ -1,0 +1,5 @@
+/node_modules
+/anotaciones
+
+/tables.sql
+/gen dbData.js
