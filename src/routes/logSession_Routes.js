@@ -1,7 +1,7 @@
 const express=require("express");
 const router=express.Router();
 
-const Controler=require("../controlers/logSession_Controler.js");
+const Controler=require("../controllers/logSession_Controler.js");
 
 //Informa si esta logeado o no
 router.get("/login",Controler.getLogin);

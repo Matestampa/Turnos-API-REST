@@ -1,12 +1,7 @@
-//require("dotenv").config();
-
-//procces.env.variable
+const {POSTGRES_CONN_VARS}=require("./app_config.js");
 
 const POSTGRES_CONFIG={
-    user:"postgres",
-    password:"postgres",
-    host:"localhost",
-    port:5432,
+    ...POSTGRES_CONN_VARS,
     database:"turnos",
     idleTimeoutMillis:0
 };

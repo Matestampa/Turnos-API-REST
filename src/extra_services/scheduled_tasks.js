@@ -1,8 +1,10 @@
-//Schedules tasks para hacer tareas repetitivas cada cierto tiempo
-//Ya sea cambiar variables, o borrar/agregar data a la db
+//---------- Scheduled tasks para hacer tareas q se repiten cada cierto tiempo ---------------
+//              (Ya sea cambiar variables, o borrar/agregar data a la db)
+
+
 const {pool}=require("../services/db/postgres.js");
 const const_vars=require("../services/const_vars/turnos_constVars.js");
-const {gen_limitDays, quit_time}=require("../helpers/time_functions.js");
+const {gen_limitDays, remove_time}=require("../helpers/time_functions.js");
 
 
 //Renueva el rango de dias en el que se pueda sacar turno
@@ -12,8 +14,8 @@ function set_limitDays(){
     
     const_vars.from_day=results[0];
     const_vars.until_day=results[1];
-    console.log("hi");
 };
+
 
 //Inserta los day_times rows de cada dia, en la tabla "day_time".
 async function insert_dayTimes_rows(){
@@ -45,6 +47,7 @@ async function insert_dayTimes_rows(){
      }
 }
 
+//Para c/u se exporta el intervalo de tiempo y el callback que debe llamarse.
 const scheduledTasks_data=[
     {"interval":"* 0 0 * * *",
      "callback":set_limitDays},

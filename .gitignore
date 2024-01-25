@@ -3,3 +3,5 @@
 
 /tables.sql
 /gen dbData.js
+
+.env

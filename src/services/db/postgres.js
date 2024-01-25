@@ -1,10 +1,15 @@
+//------------------- INICIACION DE CLASES PARA INTERACTUAR CON POSTGRES ------------------------------------
+//-------------------------------  Y COSAS RELACIONADAS    -----------------------------
+
 const {Pool}=require("pg");
 const POSTGRES_CONFIG=require("../../config/postgres_config.js");
 
-//Conection pool to make queries
+
+//Conection pool para hacer queries
 const pool=new Pool(POSTGRES_CONFIG);
 
-//Class to implement transactions
+
+//Clase para implementar tranasactions.
 class Transaction{
     constructor(connection){
        this.conn=connection;

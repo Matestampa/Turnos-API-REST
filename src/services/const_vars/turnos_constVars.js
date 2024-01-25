@@ -1,5 +1,8 @@
-//Variables (no constantes tecnicamente) pero que no se modifican especiifcamente por los endpoints
-//del user. Sino que se pueden llegar a modificar cada tanto por el admin, o por algun schedule job.
+//------------- Variables (no constantes tecnicamente) pero ------------------------------
+//------------ que no se modifican especiifcamente por los endpoints del user. ------------------- 
+//----------- Sino que se pueden llegar a modificar cada tanto por el admin, -----------------
+//----------  o por alguna scheduled task. ----------------------------------------------
+
 
 const {gen_limitDays}=require("../../helpers/time_functions.js");
 

@@ -1,7 +1,7 @@
 const express=require("express");
 const router=express.Router();
 
-const Controler=require("../controlers/turnos_Controler.js");
+const Controler=require("../controllers/turnos_Controler.js");
 
 //Traer dias disponibles
 router.get("/avail_days",Controler.get_availDays);
