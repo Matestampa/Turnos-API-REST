@@ -1,4 +1,4 @@
-const { error_handler } = require("../middlewares/error_handler.js");
+const { apiError_handler, DFLT_API_ERRORS } = require("../error_handling");
 const Service=require("../services/logSession_Service.js");
 
 //get "/login"
@@ -7,7 +7,8 @@ async function getLogin(req,res){
         res.status(200).json({status:200, message:"", data:{logged:true}});
       }
       else{
-        res.status(401).json({status:200, message:"", data:{logged:false}});
+        apiError_handler(DFLT_API_ERRORS.NOT_AUTH("",{data:{logged:false}}) , res)
+        return;
       }
 }
 
@@ -23,7 +24,7 @@ async function postLogin(req,res){
         res.status(200).json({status:200,message:"logged"});
      }
      else{
-      error_handler(res,error);
+      apiError_handler(error, res);
      }
 
 }

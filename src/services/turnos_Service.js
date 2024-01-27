@@ -3,7 +3,7 @@ const {pool,Transaction}=require("./db/postgres.js");
 const {day_diference}=require("../helpers/time_functions.js");
 const const_vars=require("./const_vars/turnos_constVars.js");
 
-const {ERRORS}=require("../middlewares/error_handler.js");
+const {DFLT_API_ERRORS,INTERNAL_ERRORS}=require("../error_handling");
 
 
 //GET "turnos/avail_days"
@@ -14,7 +14,7 @@ async function get_availDays(){
                        AND avail>0`,[const_vars.from_day,const_vars.until_day]);
     } 
     catch(e){
-        return {error:ERRORS.DB(e.message), days:null};
+        return {error:INTERNAL_ERRORS.DB(e.message), days:null};
     }
     
     return {error:null, days:response.rows};
@@ -28,7 +28,7 @@ async function get_availHours(day){
         day_time.hr=hours.id WHERE day_time.day=$1 AND day_time.avail>0`,[day]);
     }
     catch(e){
-        return {error:ERRORS.DB(e.message), hours:null};
+        return {error:INTERNAL_ERRORS.DB(e.message), hours:null};
     }
 
     return {error:null, hours:response.rows}; 
@@ -41,12 +41,12 @@ async function save_turno(day_timeId){
     let response=await pool.query("SELECT day FROM day_time WHERE id=$1",[day_timeId]);
 
     //chequear que el dia exista y este dentro del limite
-    if (response.rows.length==0){return {error:ERRORS.NOT_FOUND(), turno_id:null}}
+    if (response.rows.length==0){return {error:DFLT_API_ERRORS.NOT_FOUND(), turno_id:null}}
     
     let day=response.rows[0].day;
     if (new Date(day)>new Date(const_vars.until_day)){
         
-        return {error:ERRORS.NOT_FOUND(), turno_id:null}
+        return {error:DFLT_API_ERRORS.BAD_REQ(), turno_id:null}
     }
 
     //Hacer transacction:
@@ -60,7 +60,7 @@ async function save_turno(day_timeId){
     //Si no hay mas, rollback
     if (avail_spaces==0){
         transaction.rollback();
-        return {error:ERRORS.BAD_REQ("Turno already booked"), turno_id:null};
+        return {error:DFLT_API_ERRORS.BAD_REQ("Turno already booked"), turno_id:null};
     }
     
     //si no ,seteamos un nuevo turno y aumentamos la cant de turnos del dia
@@ -81,7 +81,7 @@ async function save_turno(day_timeId){
        }
        catch(e){
         conn.release();
-        return {error:ERRORS.DB(e.message), turno_id:null}
+        return {error:INTERNAL_ERRORS.DB(e.message), turno_id:null}
        }
        
        return {error:null, turno_id:newTurno_id};
@@ -95,7 +95,7 @@ async function cancel_turno(turno_id){
                                  ON turnos.day_time_id=day_time.id WHERE turnos.id=$1`,[turno_id]);//(agregar user_id dsps)
     
     //SI NO Trae nada, bad request
-    if (response.rows[0]==undefined){return { error:ERRORS.NOT_FOUND() }}
+    if (response.rows[0]==undefined){return { error:DFLT_API_ERRORS.BAD_REQ() }}
     
     let turno_day=response.rows[0].day;
     let day_timeId=response.rows[0].id;
@@ -104,7 +104,7 @@ async function cancel_turno(turno_id){
     //Si nos da menor al limit para cancelar, bad req
     if (day_diference(new Date(turno_day),new Date()) < const_vars.MINIMUM_DAYS_2CANCEL){
         
-        return {error:ERRORS.BAD_REQ("Days limit to cancel reached") };
+        return {error:DFLT_API_ERRORS.BAD_REQ("Days limit to cancel reached") };
     }
     //Si no ,cancelamos el turno
     else{
@@ -128,7 +128,7 @@ async function cancel_turno(turno_id){
         }
         catch(e){
             conn.release();
-            return {error:ERRORS.DB(e.message)};
+            return {error:INTERNAL_ERRORS.DB(e.message)};
         }
 
     }

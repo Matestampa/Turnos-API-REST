@@ -1,5 +1,5 @@
-//---------- Scheduled tasks para hacer tareas q se repiten cada cierto tiempo ---------------
-//              (Ya sea cambiar variables, o borrar/agregar data a la db)
+//---------- SCHEDULED TASKS PARA HACER TAREAS Q SE REPITEN CADA CIERTO TIEMPO ---------------
+//              (YA SEA CAMBIAR VARIABLES, O BORRAR/AGREGAR DATA A LA DB)
 
 
 const {pool}=require("../services/db/postgres.js");

@@ -2,16 +2,17 @@ const Service=require("../services/turnos_Service.js")
 const const_vars=require("../services/const_vars/turnos_constVars.js");
 const {day_diference}=require("../helpers/time_functions.js");
 
-const {error_handler,ERRORS}=require("../middlewares/error_handler.js");
+const {apiError_handler,DFLT_API_ERRORS}=require("../error_handling");
 
 //GET "turnos/avail_days"
 async function get_availDays(req,res){
     let {error,days}=await Service.get_availDays()
     
-    if (error){ error_handler(res,error) ;return}
+    if (error){ apiError_handler(error,res) ;return}
     
     res.status(200).json({status:200,message:"",data:{days:days}});
 }
+
 
 //GET "turnos/avail_hours/:day_id"
 async function get_availHours(req,res){
@@ -19,13 +20,14 @@ async function get_availHours(req,res){
     
     //chequear que el day sea menor que el until_day;
     if (new Date(day)> new Date(const_vars.until_day)){
-        error_handler(res, ERRORS.BAD_REQ());
+        
+        apiError_handler(DFLT_API_ERRORS.BAD_REQ(),res);
         return;
     }
     
     let {error,hours}=await Service.get_availHours(day);
 
-    if (error){error_handler(res,error);return}
+    if (error){apiError_handler(error,res);return}
 
     res.status(200).json({status:200,message:"",data:{hours:hours}});
 }
@@ -46,7 +48,7 @@ async function save_turno(req,res){
     //-------------------------------------------------------------------*/
     let {error,turno_id}=await Service.save_turno(day_timeId);
 
-    if (error){error_handler(res,error);return}
+    if (error){apiError_handler(error,res);return}
 
     res.status(200).json({status:200,message:"Succesfully booked",data:{turno_id:turno_id}});
 
@@ -71,7 +73,7 @@ async function cancel_turno(req,res){
  
     let {error}=await Service.cancel_turno(turno_id);
 
-    if (error){error_handler(res,error);return}
+    if (error){apiError_handler(error,res);return}
 
     res.status(200).json({status:200,message:"Turno cancelled"})
 }

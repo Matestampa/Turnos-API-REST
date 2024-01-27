@@ -1,9 +1,12 @@
 //------------------- ARCHIVO DE ENTRADA Y DISTRIBUCION DE VARIABLES DE ENTORNO ------------
+
 const dotenv=require("dotenv");
 const {join}=require("path")
 
 let env_absPath=join(__dirname,"../../.env")
 dotenv.config({path:env_absPath});
+
+
 
 //Variables generales de la app
 const APP_GEN_VARS={

@@ -1,7 +1,7 @@
 //------------------------ MIDDLEWARE PARA AUTENTICACION DE SESION DE USUARIO --------------- 
 
 const {APP_GEN_VARS}=require("../config/app_config.js");
-const {error_handler,ERRORS}=require("./error_handler.js");
+const {apiError_handler,DFLT_API_ERRORS}=require("../error_handling");
 
 function check_authentication(req,res,next){
     //Si no estamos en modo testing
@@ -10,7 +10,7 @@ function check_authentication(req,res,next){
             next();
         }
         else{
-            error_handler(res,ERRORS.NOT_AUTH());
+            apiError_handler(DFLT_API_ERRORS.NOT_AUTH(),res);
         }
     }
     else{

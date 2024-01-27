@@ -1,6 +1,6 @@
 const {pool}=require("./db/postgres.js");
 
-const {ERRORS}=require("../middlewares/error_handler.js");
+const {DFLT_API_ERRORS}=require("../error_handling");
 
 //get "/login"
 //LA HACEMOS TODA EN EL CONTROLLER YA QUE NO NECESITA NADA EXTRA
@@ -18,7 +18,7 @@ async function postLogin(username,password){
    let response=await pool.query(`SELECT users.id,user_access.password FROM users INNER JOIN 
                       user_access ON users.id=user_access.user_id WHERE users.username=$1`,[username]);
    
-   if (response.rows.length==0){return {error:{type:"bad_request",descr:"Invalid username or password"}}}
+   if (response.rows.length==0){ return DFLT_API_ERRORS.BAD_REQ("Invalid username or password") }
    
    //Aca deberiamos deshashear la contra antes(en caso que este hasheada)
    else if (response.rows[0].password==password){
@@ -27,7 +27,7 @@ async function postLogin(username,password){
       return {error:null,"user_id":user_id};
    }
    else{
-      return {error:ERRORS.NOT_AUTH("Invalid username or password"), user_id:null};
+      return {error:DFLT_API_ERRORS.NOT_AUTH("Invalid username or password"), user_id:null};
    }
 }
 
