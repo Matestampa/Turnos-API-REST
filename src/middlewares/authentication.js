@@ -5,8 +5,8 @@ const {apiError_handler,DFLT_API_ERRORS}=require("../error_handling");
 
 function check_authentication(req,res,next){
     
-    //Si no estamos en modo testing, aplicamos la autenticacion a las requests
-    if (!APP_GEN_VARS.testing_mode){
+    //Si no estamos en modo dev, aplicamos la autenticacion a las requests
+    if (!APP_GEN_VARS.dev_mode){
         if (req.cookies.user_id==req.session.user_id){
             next();
         }

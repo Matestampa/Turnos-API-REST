@@ -3,6 +3,7 @@ const const_vars=require("../services/const_vars/turnos_constVars.js");
 const {day_diference}=require("../helpers/time_functions.js");
 
 const {apiError_handler,DFLT_API_ERRORS}=require("../error_handling");
+const { normal_response }=require("../middlewares/response.js");
 
 
 //GET "turnos/avail_days"
@@ -11,7 +12,7 @@ async function get_availDays(req,res){
     
     if (error){ apiError_handler(error,res) ;return}
     
-    res.status(200).json({status:200,message:"", data:{days:days}});
+    normal_response(res,"",{days:days})
 }
 
 
@@ -30,7 +31,7 @@ async function get_availHours(req,res){
 
     if (error){apiError_handler(error,res); return}
 
-    res.status(200).json({status:200,message:"",data:{hours:hours}});
+    normal_response(res, "",{hours:hours})
 }
 
 //POST "turnos/save"
@@ -40,9 +41,8 @@ async function save_turno(req,res){
     let {error,turno_id}=await Service.save_turno(day_timeId);
 
     if (error){apiError_handler(error,res);return}
-
-    res.status(200).json({status:200,message:"Succesfully booked",data:{turno_id:turno_id}});
-
+    
+    normal_response(res, "Succesfully booked", {turno_id:turno_id})
 }
 
 //PUT "turnos/cancel"
@@ -52,8 +52,8 @@ async function cancel_turno(req,res){
     let {error}=await Service.cancel_turno(turno_id,req.session.user_id);
 
     if (error){apiError_handler(error,res);return}
-
-    res.status(200).json({status:200,message:"Turno cancelled"})
+    
+    normal_response(res, "Turno cancelled",)
 }
 
 
