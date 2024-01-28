@@ -21,9 +21,9 @@ const {APP_GEN_VARS}=require("./config/app_config.js");
 const App=express();
 
 //------------ Activacion de scheduled tasks ------------------------
-/*for (let task of scheduledTasks_data){
+for (let task of scheduledTasks_data){
     cron.schedule(task.interval,task.callback);
-}*/
+}
 
 
 
