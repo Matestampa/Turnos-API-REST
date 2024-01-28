@@ -10,8 +10,8 @@ dotenv.config({path:env_absPath});
 
 //Variables generales de la app
 const APP_GEN_VARS={
-    session_secret:process.env.SESSION_SECRET,
     dev_mode:process.env.ENV=="dev" ? true : false,
+    session_secret:process.env.SESSION_SECRET,
 }
 
 //Variables de conexion de la app
@@ -27,6 +27,7 @@ const POSTGRES_CONN_VARS={
     host:process.env.PG_HOST,
     port:process.env.PG_PORT,
 }
+
 
 module.exports={APP_GEN_VARS,
                APP_CONN_VARS,
