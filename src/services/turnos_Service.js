@@ -90,25 +90,27 @@ async function save_turno(day_timeId){
 }
 
 //PUT "turnos/cancel"
-async function cancel_turno(turno_id){
-    //Traer horario del turno de la db usando tmb el user id, para ver q sea de el user q lo pide
+async function cancel_turno(turno_id,user_id){
+    //Traer dia y dayTime_id de la db usando tmb el user id, para ver q sea de el user q lo pide
     let response=await pool.query(`SELECT day_time.id,day_time.day FROM turnos INNER JOIN day_time 
-                                 ON turnos.day_time_id=day_time.id WHERE turnos.id=$1`,[turno_id]);//(agregar user_id dsps)
+                                 ON turnos.day_time_id=day_time.id WHERE turnos.id=$1 
+                                 AND turnos.user_id=$2`,[turno_id, user_id]);
     
     //Si no Trae nada, bad request
     if (response.rows[0]==undefined){return { error:DFLT_API_ERRORS.BAD_REQ() }}
     
+    //Si es coorecto tomamos la data
     let turno_day=response.rows[0].day;
-    let day_timeId=response.rows[0].id;
+    let dayTime_id=response.rows[0].id;
 
     
-    //Si nos da menor al limit para cancelar, bad req
+    //Chequear que el dia este al tiempo correcto para cancelar.
     if (day_diference(new Date(turno_day),new Date()) < const_vars.MINIMUM_DAYS_2CANCEL){
         
         return {error:DFLT_API_ERRORS.BAD_REQ("Days limit to cancel reached") };
     }
     
-    //Si no ,procedemos a cancelar el turno
+    //Si esta bien, procedemos a cancelarlo.
     else{
         
         //Comenzamos transaction
@@ -121,7 +123,7 @@ async function cancel_turno(turno_id){
         await conn.query("DELETE FROM turnos WHERE id=$1",[turno_id]);
         
         //Aumentamos los espacios disponibles para el day_time
-        let avail=(await conn.query(`UPDATE day_time SET avail=avail+1 WHERE id=$1 returning avail`,[day_timeId])).rows[0].avail;
+        let avail=(await conn.query(`UPDATE day_time SET avail=avail+1 WHERE id=$1 returning avail`,[dayTime_id])).rows[0].avail;
         
         //Chequeamos si hay que aumentar el available de day tambien
         if (avail==1){ //osea si antes del update el avail de day_time estaba en 0
@@ -142,6 +144,7 @@ async function cancel_turno(turno_id){
 }
 
 
+//------------------------------- APARTADO PARA LA FUNCIONALIDAD DE PAGOS -----------------------------
 
 //Esta es una function, que no deberia ser endpoint directamente
 //Si no que debe haber un endpoint, que reciba el pago con el "toConfirm_id"
