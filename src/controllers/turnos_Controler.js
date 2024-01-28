@@ -4,13 +4,14 @@ const {day_diference}=require("../helpers/time_functions.js");
 
 const {apiError_handler,DFLT_API_ERRORS}=require("../error_handling");
 
+
 //GET "turnos/avail_days"
 async function get_availDays(req,res){
     let {error,days}=await Service.get_availDays()
     
     if (error){ apiError_handler(error,res) ;return}
     
-    res.status(200).json({status:200,message:"",data:{days:days}});
+    res.status(200).json({status:200,message:"", data:{days:days}});
 }
 
 
@@ -18,7 +19,7 @@ async function get_availDays(req,res){
 async function get_availHours(req,res){
     let day=req.params.day_id;
     
-    //chequear que el day sea menor que el until_day;
+    //chequear que el "day" sea menor que el "until_day";
     if (new Date(day)> new Date(const_vars.until_day)){
         
         apiError_handler(DFLT_API_ERRORS.BAD_REQ(),res);
@@ -27,7 +28,7 @@ async function get_availHours(req,res){
     
     let {error,hours}=await Service.get_availHours(day);
 
-    if (error){apiError_handler(error,res);return}
+    if (error){apiError_handler(error,res); return}
 
     res.status(200).json({status:200,message:"",data:{hours:hours}});
 }

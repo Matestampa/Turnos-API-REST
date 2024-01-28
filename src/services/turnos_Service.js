@@ -40,8 +40,8 @@ async function save_turno(day_timeId){
     //Traer day del day_time
     let response=await pool.query("SELECT day FROM day_time WHERE id=$1",[day_timeId]);
 
-    //chequear que el dia exista y este dentro del limite
-    if (response.rows.length==0){return {error:DFLT_API_ERRORS.NOT_FOUND(), turno_id:null}}
+    //Chequear que el dia exista y este dentro del limite
+    if (response.rows.length==0){return {error:DFLT_API_ERRORS.BAD_REQ(), turno_id:null}}
     
     let day=response.rows[0].day;
     if (new Date(day)>new Date(const_vars.until_day)){
@@ -49,12 +49,12 @@ async function save_turno(day_timeId){
         return {error:DFLT_API_ERRORS.BAD_REQ(), turno_id:null}
     }
 
-    //Hacer transacction:
+    //Comenzar transacction:
     let conn=await pool.connect();
     let transaction=new Transaction(conn);
     transaction.start();
     
-    //Fijarse si existe algo en turnos con el day y el hour_id
+    //Fijarse si hay espacios disponibles para ese day_time
     let avail_spaces=(await conn.query(`SELECT avail FROM day_time WHERE id=$1 FOR UPDATE`,[day_timeId])).rows[0].avail;
     
     //Si no hay mas, rollback
@@ -63,22 +63,23 @@ async function save_turno(day_timeId){
         return {error:DFLT_API_ERRORS.BAD_REQ("Turno already booked"), turno_id:null};
     }
     
-    //si no ,seteamos un nuevo turno y aumentamos la cant de turnos del dia
+    //Si no ,agregamos un nuevo turno y disminuimos la cant de espacios para ese day_time
     else{
-       //chequeamos al insertar q no hayan mandado dias o horas q no existen
        let newTurno_id;
        
-       //aumentamos la cant de turnos del dia
+       //disminuimos espacios
        await conn.query(`UPDATE day_time SET avail=avail-1 WHERE id=$1`,[day_timeId])
        
-       //chequeamos si hay que updatear los available da days tmb
-       if (avail_spaces-1==0){//osea si con el update anterior se perdio este time/hour
+       //Chequeamos si hay que disminuir los available de days tmb
+       if (avail_spaces-1==0){//osea si con el update anterior se perdio al completo ese day_time
          await conn.query(`UPDATE days SET avail=avail-1 WHERE day=$1`,[day]);
        }
        
+       //Hacemos "commit" de la transaction
        try {
         transaction.commit();
        }
+       
        catch(e){
         conn.release();
         return {error:INTERNAL_ERRORS.DB(e.message), turno_id:null}
@@ -90,11 +91,11 @@ async function save_turno(day_timeId){
 
 //PUT "turnos/cancel"
 async function cancel_turno(turno_id){
-    //Traer horario del turno de la db usando tmb el usr id, para ver q sea de el user q lo pide
+    //Traer horario del turno de la db usando tmb el user id, para ver q sea de el user q lo pide
     let response=await pool.query(`SELECT day_time.id,day_time.day FROM turnos INNER JOIN day_time 
                                  ON turnos.day_time_id=day_time.id WHERE turnos.id=$1`,[turno_id]);//(agregar user_id dsps)
     
-    //SI NO Trae nada, bad request
+    //Si no Trae nada, bad request
     if (response.rows[0]==undefined){return { error:DFLT_API_ERRORS.BAD_REQ() }}
     
     let turno_day=response.rows[0].day;
@@ -106,22 +107,28 @@ async function cancel_turno(turno_id){
         
         return {error:DFLT_API_ERRORS.BAD_REQ("Days limit to cancel reached") };
     }
-    //Si no ,cancelamos el turno
+    
+    //Si no ,procedemos a cancelar el turno
     else{
+        
+        //Comenzamos transaction
         let conn=await pool.connect();
         let transacction=new Transaction(conn);
         
         transacction.start();
-
+        
+        //Borramos el turno
         await conn.query("DELETE FROM turnos WHERE id=$1",[turno_id]);
         
+        //Aumentamos los espacios disponibles para el day_time
         let avail=(await conn.query(`UPDATE day_time SET avail=avail+1 WHERE id=$1 returning avail`,[day_timeId])).rows[0].avail;
         
-        //Chequeamos si hay que volver a habilitar el day tmb
-        if (avail==1){ //osea si antes del update estaba en 0
+        //Chequeamos si hay que aumentar el available de day tambien
+        if (avail==1){ //osea si antes del update el avail de day_time estaba en 0
             await conn.query("UPDATE days SET avail=avail+1 WHERE day=$1",[turno_day]);
         }
         
+        //Hacemos "commit" de la transaction
         try{
           transacction.commit();
           return;
@@ -133,6 +140,8 @@ async function cancel_turno(turno_id){
 
     }
 }
+
+
 
 //Esta es una function, que no deberia ser endpoint directamente
 //Si no que debe haber un endpoint, que reciba el pago con el "toConfirm_id"

@@ -3,13 +3,13 @@ const router=express.Router();
 
 const Controler=require("../controllers/logSession_Controler.js");
 
-//Informa si esta logeado o no
+//Informar si esta logeado o no
 router.get("/login",Controler.getLogin);
 
-//Loggea si la data esta bien
+//Hacer login
 router.post("/login",Controler.postLogin);
 
-//Cierra la session
+//Cerrar session
 router.get("/logout",Controler.logout);
 
 

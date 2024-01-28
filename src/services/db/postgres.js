@@ -5,7 +5,7 @@ const {Pool}=require("pg");
 const POSTGRES_CONFIG=require("../../config/postgres_config.js");
 
 
-//Conection pool para hacer queries
+//Conection pool para hacer queries a la DB.
 const pool=new Pool(POSTGRES_CONFIG);
 
 

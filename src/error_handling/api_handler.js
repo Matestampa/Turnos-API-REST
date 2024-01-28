@@ -4,12 +4,16 @@ const {internalError_handler,InternalError}=require("./internal_handler.js");
 
 async function apiError_handler(error,response){
     
+    //Revisamos si se trata de un error interno
     if (error instanceof InternalError){
+        //Se lo pasamos al handler interno
         internalError_handler(error);
+        
+        //Transformamos el error en uno para el user.
         error=DFLT_API_ERRORS.SERVER();
     }
-
-    //hace bien la data de la reponse
+    
+    //Ordena bien data de response
     let response_message=error.message? error.message: error.default_message;
     
     //se la manda al user

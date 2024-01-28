@@ -6,8 +6,8 @@ function remove_time(date){
     return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
 }
 
-//Genera el dia de la fecha en formato "remove_time" y tambien el dia pasado ciertos dias
-//tambien en el mismo formato
+//Genera el dia actual en formato "remove_time" y tambien el dia en el futuro pasados
+//ciertos dias (limit) 
 function gen_limitDays(limit){
     let today=new Date()
     
@@ -19,7 +19,7 @@ function gen_limitDays(limit){
     return [from_day,until_day];
 }
 
-//Calcula diferencia de dias entre 2 fechas con decimales incluidos
+//Calcula diferencia de dias entre 2 fechas, con decimales incluidos
 function day_diference(date1,date2){
     let ms_diff=date1.getTime()-date2.getTime();
     return ms_diff / (1000*60*60*24);

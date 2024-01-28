@@ -5,7 +5,6 @@ const cron=require("node-cron");
 const {scheduledTasks_data}=require("./extra_services/scheduled_tasks.js");
 
 //-------------- importacion de middlewares -----------------
-const {APP_GEN_VARS}=require("./config/app_config.js");
 const sessions=require("express-session");
 const cookieparser=require("cookie-parser");
 const {check_authentication}=require("./middlewares/authentication.js");
@@ -13,6 +12,9 @@ const {check_authentication}=require("./middlewares/authentication.js");
 //--------------- importacion de rutas --------------------------
 const logSession_Routes=require("./routes/logSession_Routes.js");
 const turnos_Routes=require("./routes/turnos_Routes.js");
+
+//--------------- importacion cosas generales --------------------
+const {APP_GEN_VARS}=require("./config/app_config.js");
 
 
 
@@ -23,7 +25,9 @@ const App=express();
     cron.schedule(task.interval,task.callback);
 }*/
 
-//----------- Config general Express --------------------------
+
+
+//---------------- Config general Express -------------------------------
 App.use(express.json());
 App.use(cookieparser());
 
@@ -34,6 +38,7 @@ App.use(sessions({
     cookie:{max_age:1000*60*60*24},
 
 }));
+
 
 //---------------- ENDPOINTS ---------------------------------------------
 App.use("/user",logSession_Routes);
