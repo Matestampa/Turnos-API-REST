@@ -4,6 +4,5 @@
 /tables.sql
 /gen dbData.js
 
-/src/services/payment_Service.js
 
 .env
