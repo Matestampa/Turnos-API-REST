@@ -13,7 +13,7 @@ const {check_authentication}=require("./middlewares/authentication.js");
 const logSession_Routes=require("./routes/logSession_Routes.js");
 const turnos_Routes=require("./routes/turnos_Routes.js");
 
-//--------------- importacion cosas generales --------------------
+//--------------- importacion vars generales de la app --------------------
 const {APP_GEN_VARS}=require("./config/app_config.js");
 
 

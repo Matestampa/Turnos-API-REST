@@ -36,7 +36,7 @@ class Db_Error extends InternalError{
 }
 
 const INTERNAL_ERRORS=Object.freeze({
-  DB:(message,attachedError)=>new Api_NotAuth_Error(message,attachedError),
+  DB:(message,attachedError)=>new Db_Error(message,attachedError),
 })
 
 module.exports={internalError_handler,InternalError, INTERNAL_ERRORS};

@@ -4,7 +4,7 @@ const { normal_response }=require("../middlewares/response.js");
 const Service=require("../services/logSession_Service.js");
 
 //GET "/login"
-async function getLogin(req,res){
+async function get_login(req,res){
       if (req.session.user_id){
         normal_response(res, "", {logged:true});
 
@@ -17,7 +17,7 @@ async function getLogin(req,res){
 }
 
 //PUT "login"
-async function postLogin(req,res){
+async function post_login(req,res){
      let {username,password}=req.body;
 
      let {error,user_id}=await Service.postLogin(username,password);
@@ -41,5 +41,5 @@ async function logout(req,res){
 
 
 module.exports={
-    getLogin,postLogin,logout
+    get_login,post_login,logout
 }

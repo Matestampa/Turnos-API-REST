@@ -83,7 +83,7 @@ async function save_turno(day_timeId,user_id){
        }
        
        catch(e){
-        conn.release();
+        transaction.rollback();
         return {error:INTERNAL_ERRORS.DB(e.message), turno_id:null}
        }
        
@@ -138,7 +138,7 @@ async function cancel_turno(turno_id,user_id){
           return {};
         }
         catch(e){
-            conn.release();
+            transacction.rollback();
             return {error:INTERNAL_ERRORS.DB(e.message)};
         }
 

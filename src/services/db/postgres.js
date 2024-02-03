@@ -2,11 +2,13 @@
 //-------------------------------  Y COSAS RELACIONADAS    -----------------------------
 
 const {Pool}=require("pg");
-const POSTGRES_CONFIG=require("../../config/postgres_config.js");
+const {POSTGRES_CONN_VARS,POSTGRES_POOL_VARS}=require("../../config/postgres_config.js");
 
-
-//Conection pool para hacer queries a la DB.
-const pool=new Pool(POSTGRES_CONFIG);
+//Connection pool para hacer queries a la db
+const pool=new Pool({
+    ...POSTGRES_CONN_VARS,
+    ...POSTGRES_POOL_VARS
+});
 
 
 //Clase para implementar tranasactions.
